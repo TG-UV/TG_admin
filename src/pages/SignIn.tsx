@@ -4,10 +4,7 @@ import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
-import Checkbox from '@mui/joy/Checkbox';
-import Divider from '@mui/joy/Divider';
 import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
 import IconButton, { IconButtonProps } from '@mui/joy/IconButton';
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
@@ -15,13 +12,11 @@ import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import GoogleIcon from '../components/GoogleIcon';
+import '../index.css';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
   password: HTMLInputElement;
-  persistent: HTMLInputElement;
 }
 interface SignInFormElement extends HTMLFormElement {
   readonly elements: FormElements;
@@ -37,6 +32,7 @@ function ColorSchemeToggle(props: IconButtonProps) {
   return (
     <IconButton
       aria-label="toggle light/dark mode"
+      title="Modo claro/Modo oscuro"
       size="sm"
       variant="outlined"
       disabled={!mounted}
@@ -50,6 +46,23 @@ function ColorSchemeToggle(props: IconButtonProps) {
     </IconButton>
   );
 }
+
+function getImage(urls: string[]): string {
+  const index: number = Math.floor(Math.random() * urls.length);
+  return urls[index];
+}
+
+const lightImagesUrls: string[] = [
+  'https://images.unsplash.com/photo-1515256722043-0f2b082ddadc?q=80&w=1451&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1604079628040-94301bb21b91?q=80&w=1374&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1520052205864-92d242b3a76b?q=80&w=1469&auto=format&fit=crop',
+];
+
+const darkImagesUrls: string[] = [
+  'https://images.unsplash.com/photo-1492573637402-25691cd9eac2?q=80&w=1470&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1560324212-d10118dbd8cc?q=80&w=1527&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1546964372-c96876b9dc95?q=80&w=1471&auto=format&fit=crop',
+];
 
 export default function JoySignInSideTemplate() {
   return (
@@ -65,23 +78,16 @@ export default function JoySignInSideTemplate() {
       />
       <Box
         sx={(theme) => ({
-          height: '100%',
-          position: 'fixed',
-          right: { xs: 0, md: '50vw' },
-          top: 0,
-          bottom: 0,
-          left: 0,
-
           width: { xs: '100%', md: '50vw' },
           transition: 'width var(--Transition-duration)',
           transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
+          position: 'relative',
           zIndex: 1,
           display: 'flex',
           justifyContent: 'flex-end',
-          backdropFilter: 'blur(12px)',
-          backgroundColor: 'rgba(255 255 255 / 0.2)',
+          backgroundColor: 'rgba(255 255 255 / 0.9)',
           [theme.getColorSchemeSelector('dark')]: {
-            backgroundColor: 'rgba(19 19 24 / 0.4)',
+            backgroundColor: 'rgba(19 19 24 / 0.9)',
           },
         })}
       >
@@ -89,8 +95,6 @@ export default function JoySignInSideTemplate() {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
             minHeight: '100dvh',
             width: '100%',
             px: 2,
@@ -99,21 +103,20 @@ export default function JoySignInSideTemplate() {
           <Box
             component="header"
             sx={{
-              my: 0,
-              pb: 4,
+              pt: 3,
               gap: 2,
               display: 'flex',
-              justifyContent: 'center',
+              justifyContent: 'right',
             }}
           >
-            <IconButton variant="soft" color="neutral" size="sm">
-              <BadgeRoundedIcon />
-            </IconButton>
             <ColorSchemeToggle />
           </Box>
           <Box
             component="main"
             sx={{
+              my: 'auto',
+              py: 0,
+              pb: 0,
               display: 'flex',
               flexDirection: 'column',
               gap: 2,
@@ -131,7 +134,19 @@ export default function JoySignInSideTemplate() {
               },
             }}
           >
-            <Stack gap={4} sx={{ mb: 2 }}>
+            <Stack
+              gap={4}
+              sx={{ mb: 2, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <IconButton
+                variant="soft"
+                color="primary"
+                size="lg"
+                sx={{ borderRadius: '50%' }}
+                title="Rayo"
+              >
+                <img src="/logo.png" alt="Logo" className="logo" />
+              </IconButton>
               <Typography component="h1" level="h1">
                 Iniciar sesión
               </Typography>
@@ -144,19 +159,25 @@ export default function JoySignInSideTemplate() {
                   const data = {
                     email: formElements.email.value,
                     password: formElements.password.value,
-                    persistent: formElements.persistent.checked,
                   };
                   alert(JSON.stringify(data, null, 2));
                 }}
               >
                 <FormControl required>
-                  <Input type="email" name="email" placeholder="Correo" />
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder="Correo"
+                    title="Correo"
+                    autoComplete="email"
+                  />
                 </FormControl>
                 <FormControl required>
                   <Input
                     type="password"
                     name="password"
                     placeholder="Contraseña"
+                    title="Contraseña"
                   />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
@@ -171,23 +192,16 @@ export default function JoySignInSideTemplate() {
                       ¿Olvidaste tu contraseña?
                     </Link>
                   </Box>
-                  <Button type="submit" fullWidth>
+                  <Button type="submit" title="Iniciar sesión" fullWidth>
                     Iniciar sesión
                   </Button>
                 </Stack>
               </form>
             </Stack>
           </Box>
-          <Box
-            component="footer"
-            sx={{
-              position: 'fixed',
-              bottom: 0,
-              pb: 4,
-            }}
-          >
+          <Box component="footer" sx={{ py: 3 }}>
             <Typography level="body-xs" textAlign="center">
-              © Rayo {new Date().getFullYear()}
+              © {new Date().getFullYear()} · Rayo
             </Typography>
           </Box>
         </Box>
@@ -207,11 +221,9 @@ export default function JoySignInSideTemplate() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundImage:
-            'url(https://images.unsplash.com/photo-1515256722043-0f2b082ddadc?q=80&w=1451&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)',
+          backgroundImage: `url(${getImage(lightImagesUrls)})`,
           [theme.getColorSchemeSelector('dark')]: {
-            backgroundImage:
-              'url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)',
+            backgroundImage: `url(${getImage(darkImagesUrls)})`,
           },
         })}
       />
