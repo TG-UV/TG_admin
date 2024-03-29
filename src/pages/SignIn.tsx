@@ -13,6 +13,9 @@ import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import '../index.css';
+import { signIn } from '../api/Auth.js';
+import { AxiosResponse } from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -65,6 +68,35 @@ const darkImagesUrls: string[] = [
 ];
 
 export default function JoySignInSideTemplate() {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
+    event.preventDefault();
+    const formElements = event.currentTarget.elements;
+
+    const data = {
+      email: formElements.email.value,
+      password: formElements.password.value,
+    };
+
+    try {
+      const res: AxiosResponse = await signIn(data);
+
+      if (res.status === 200) {
+        navigate('/home', { state: { name: 'Bienvenido ' + data.email } });
+        alert(JSON.stringify(res.data, null, 2));
+      } else {
+        const data = {
+          error: res.status + ' Ha ocurrido un error. Intente nuevamente',
+        };
+        alert(JSON.stringify(data, null, 2));
+      }
+    } catch (error) {
+      const errorData = error.response.data;
+      alert(JSON.stringify(errorData, null, 2));
+    }
+  };
+
   return (
     <CssVarsProvider defaultMode="dark" disableTransitionOnChange>
       <CssBaseline />
@@ -152,17 +184,7 @@ export default function JoySignInSideTemplate() {
               </Typography>
             </Stack>
             <Stack gap={4} sx={{ mt: 2 }}>
-              <form
-                onSubmit={(event: React.FormEvent<SignInFormElement>) => {
-                  event.preventDefault();
-                  const formElements = event.currentTarget.elements;
-                  const data = {
-                    email: formElements.email.value,
-                    password: formElements.password.value,
-                  };
-                  alert(JSON.stringify(data, null, 2));
-                }}
-              >
+              <form onSubmit={handleSubmit}>
                 <FormControl required>
                   <Input
                     type="email"
