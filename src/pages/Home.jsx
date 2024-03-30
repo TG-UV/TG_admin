@@ -5,10 +5,6 @@ function Home() {
   const location = useLocation();
   const { name } = location.state || {};
 
-  return (
-    <>
-      <h1>{name}</h1>
-    </>
-  );
+  return <h1>{name}</h1>;
 }
 export default Home;

@@ -16,6 +16,7 @@ import '../index.css';
 import { signIn } from '../api/Auth.js';
 import { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ErrorBox from '../components/ErrorBox.jsx';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -69,10 +70,17 @@ const darkImagesUrls: string[] = [
 
 export default function JoySignInSideTemplate() {
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
+  const [buttonCaption, setButtonCaption] = React.useState('Iniciar sesión');
+  const [errorAlert, setErrorAlert] = React.useState(<></>);
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
+
+    setLoading(true);
+    setButtonCaption('');
+    setErrorAlert(<></>);
 
     const data = {
       email: formElements.email.value,
@@ -84,16 +92,19 @@ export default function JoySignInSideTemplate() {
 
       if (res.status === 200) {
         navigate('/home', { state: { name: 'Bienvenido ' + data.email } });
-        alert(JSON.stringify(res.data, null, 2));
       } else {
-        const data = {
-          error: res.status + ' Ha ocurrido un error. Intente nuevamente',
-        };
-        alert(JSON.stringify(data, null, 2));
+        const status =
+          '(' + res.status + ') Ha ocurrido un error. Intente nuevamente.';
+        setErrorAlert(<ErrorBox message={status} />);
       }
     } catch (error) {
-      const errorData = error.response.data;
-      alert(JSON.stringify(errorData, null, 2));
+      const errorData = error.response
+        ? 'Correo o contraseña incorrecta. Intente nuevamente.'
+        : 'Error del servidor. Intente más tarde.';
+      setErrorAlert(<ErrorBox message={errorData} />);
+    } finally {
+      setLoading(false);
+      setButtonCaption('Iniciar sesión');
     }
   };
 
@@ -200,23 +211,22 @@ export default function JoySignInSideTemplate() {
                     name="password"
                     placeholder="Contraseña"
                     title="Contraseña"
+                    autoComplete="current-password"
                   />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
+                  <Link level="title-sm" href="#">
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                  <Button
+                    type="submit"
+                    title="Iniciar sesión"
+                    loading={loading}
+                    fullWidth
                   >
-                    <Link level="title-sm" href="#">
-                      ¿Olvidaste tu contraseña?
-                    </Link>
-                  </Box>
-                  <Button type="submit" title="Iniciar sesión" fullWidth>
-                    Iniciar sesión
+                    {buttonCaption}
                   </Button>
+                  {errorAlert}
                 </Stack>
               </form>
             </Stack>
