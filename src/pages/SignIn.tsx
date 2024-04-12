@@ -1,22 +1,21 @@
 import * as React from 'react';
-import { CssVarsProvider, useColorScheme } from '@mui/joy/styles';
+import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
-import IconButton, { IconButtonProps } from '@mui/joy/IconButton';
+import IconButton from '@mui/joy/IconButton';
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
-import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import '../index.css';
-import { signIn } from '../api/Auth.js';
+import { signIn } from '../api/Auth';
 import { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ErrorBox from '../components/ErrorBox.jsx';
+import ErrorBox from '../components/ErrorBox';
+import ColorSchemeToggle from '../components/ColorSchemeToggle';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -24,31 +23,6 @@ interface FormElements extends HTMLFormControlsCollection {
 }
 interface SignInFormElement extends HTMLFormElement {
   readonly elements: FormElements;
-}
-
-function ColorSchemeToggle(props: IconButtonProps) {
-  const { onClick, ...other } = props;
-  const { mode, setMode } = useColorScheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => setMounted(true), []);
-
-  return (
-    <IconButton
-      aria-label="toggle light/dark mode"
-      title="Modo claro/Modo oscuro"
-      size="sm"
-      variant="outlined"
-      disabled={!mounted}
-      onClick={(event) => {
-        setMode(mode === 'light' ? 'dark' : 'light');
-        onClick?.(event);
-      }}
-      {...other}
-    >
-      {mode === 'light' ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
-    </IconButton>
-  );
 }
 
 function getImage(urls: string[]): string {
@@ -68,11 +42,15 @@ const darkImagesUrls: string[] = [
   'https://images.unsplash.com/photo-1546964372-c96876b9dc95?q=80&w=1471&auto=format&fit=crop',
 ];
 
-export default function JoySignInSideTemplate() {
+export default function SignIn() {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [buttonCaption, setButtonCaption] = React.useState('Iniciar sesión');
   const [errorAlert, setErrorAlert] = React.useState(<></>);
+  const [lightImage, setLightImage] = React.useState('');
+  const [darkImage, setDarkImage] = React.useState('');
+  React.useEffect(() => setLightImage(getImage(lightImagesUrls)), []);
+  React.useEffect(() => setDarkImage(getImage(darkImagesUrls)), []);
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
@@ -91,7 +69,7 @@ export default function JoySignInSideTemplate() {
       const res: AxiosResponse = await signIn(data);
 
       if (res.status === 200) {
-        navigate('/home', { state: { name: 'Bienvenido ' + data.email } });
+        navigate('/home', { state: { name: data.email } });
       } else {
         const status =
           '(' + res.status + ') Ha ocurrido un error. Intente nuevamente.';
@@ -253,9 +231,9 @@ export default function JoySignInSideTemplate() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundImage: `url(${getImage(lightImagesUrls)})`,
+          backgroundImage: `url(${lightImage})`,
           [theme.getColorSchemeSelector('dark')]: {
-            backgroundImage: `url(${getImage(darkImagesUrls)})`,
+            backgroundImage: `url(${darkImage})`,
           },
         })}
       />
