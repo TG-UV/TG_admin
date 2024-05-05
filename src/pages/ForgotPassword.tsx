@@ -11,30 +11,23 @@ import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import '../index.css';
-import { signIn } from '../api/Auth';
+import { sendPasswordResetLink } from '../api/Auth';
 import { AxiosResponse } from 'axios';
-import { useNavigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
-import getRandomImage from '../utils/getRandomImage';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
-  password: HTMLInputElement;
 }
 interface SignInFormElement extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-export default function SignIn() {
-  const navigate = useNavigate();
+export default function ForgotPassword() {
   const [loading, setLoading] = React.useState(false);
-  const [buttonCaption, setButtonCaption] = React.useState('Iniciar sesión');
-  const [errorAlert, setErrorAlert] = React.useState(<></>);
-  const [lightImage, setLightImage] = React.useState('');
-  const [darkImage, setDarkImage] = React.useState('');
-  React.useEffect(() => setLightImage(getRandomImage('light')), []);
-  React.useEffect(() => setDarkImage(getRandomImage('dark')), []);
+  const [buttonCaption, setButtonCaption] = React.useState('Enviar enlace');
+  const [emailSent, setEmailSent] = React.useState(false);
+  const [alert, setAlert] = React.useState(<></>);
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
@@ -42,31 +35,31 @@ export default function SignIn() {
 
     setLoading(true);
     setButtonCaption('');
-    setErrorAlert(<></>);
+    setAlert(<></>);
 
     const data = {
       email: formElements.email.value,
-      password: formElements.password.value,
     };
 
     try {
-      const res: AxiosResponse = await signIn(data);
+      const res: AxiosResponse = await sendPasswordResetLink(data);
 
-      if (res.status === 200) {
-        navigate('/home', { state: { name: data.email } });
+      if (res.status < 400) {
+        setEmailSent(true);
+        const status =
+          'Te hemos enviado un correo para restablecer la contraseña.';
+        setAlert(<MessageBox color="success" message={status} />);
       } else {
         const status =
           '(' + res.status + ') Ha ocurrido un error. Intente nuevamente.';
-        setErrorAlert(<MessageBox color="danger" message={status} />);
+        setAlert(<MessageBox color="danger" message={status} />);
       }
     } catch (error) {
-      const errorData = error.response
-        ? 'Correo o contraseña incorrecta. Intente nuevamente.'
-        : 'Error del servidor. Intente más tarde.';
-      setErrorAlert(<MessageBox color="danger" message={errorData} />);
+      const message = 'Error del servidor. Intente más tarde.';
+      setAlert(<MessageBox color="danger" message={message} />);
     } finally {
       setLoading(false);
-      setButtonCaption('Iniciar sesión');
+      setButtonCaption('Enviar enlace');
     }
   };
 
@@ -83,7 +76,7 @@ export default function SignIn() {
       />
       <Box
         sx={(theme) => ({
-          width: { xs: '100%', md: '50vw' },
+          width: { xs: '100%', md: '100vw' },
           transition: 'width var(--Transition-duration)',
           transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
           position: 'relative',
@@ -141,7 +134,7 @@ export default function SignIn() {
           >
             <Stack
               gap={4}
-              sx={{ mb: 2, alignItems: 'center', justifyContent: 'center' }}
+              sx={{ mb: 0, alignItems: 'center', justifyContent: 'center' }}
             >
               <IconButton
                 variant="soft"
@@ -152,13 +145,17 @@ export default function SignIn() {
               >
                 <img src="/logo.png" alt="Logo" className="logo" />
               </IconButton>
-              <Typography component="h1" level="h1">
-                Iniciar sesión
+              <Typography component="h3" level="h3">
+                Restablecer contraseña
+              </Typography>
+              <Typography color="neutral" level="body-md">
+                Ingresa tu correo y te enviaremos un enlace para que puedas
+                restablecer tu contraseña.
               </Typography>
             </Stack>
             <Stack gap={4} sx={{ mt: 2 }}>
               <form onSubmit={handleSubmit}>
-                <FormControl required>
+                <FormControl required disabled={emailSent}>
                   <Input
                     type="email"
                     name="email"
@@ -167,30 +164,22 @@ export default function SignIn() {
                     autoComplete="email"
                   />
                 </FormControl>
-                <FormControl required>
-                  <Input
-                    type="password"
-                    name="password"
-                    placeholder="Contraseña"
-                    title="Contraseña"
-                    autoComplete="current-password"
-                  />
-                </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
-                  <Link level="title-sm" href="/forgot-password">
-                    ¿Olvidaste tu contraseña?
-                  </Link>
                   <Button
                     type="submit"
-                    title="Iniciar sesión"
+                    title="Enviar enlace"
                     loading={loading}
                     fullWidth
+                    disabled={emailSent}
                   >
                     {buttonCaption}
                   </Button>
-                  {errorAlert}
+                  {alert}
                 </Stack>
               </form>
+              <Link level="title-sm" href="/">
+                Volver al inicio de sesión
+              </Link>
             </Stack>
           </Box>
           <Box component="footer" sx={{ py: 3 }}>
@@ -200,27 +189,6 @@ export default function SignIn() {
           </Box>
         </Box>
       </Box>
-      <Box
-        sx={(theme) => ({
-          height: '100%',
-          position: 'fixed',
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: { xs: 0, md: '50vw' },
-          transition:
-            'background-image var(--Transition-duration), left var(--Transition-duration) !important',
-          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
-          backgroundColor: 'background.level1',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundImage: `url(${lightImage})`,
-          [theme.getColorSchemeSelector('dark')]: {
-            backgroundImage: `url(${darkImage})`,
-          },
-        })}
-      />
     </CssVarsProvider>
   );
 }

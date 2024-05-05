@@ -1,7 +1,7 @@
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
 
-const ErrorBox = ({ message }) => (
+const MessageBox = ({ color, message }) => (
   <Box
     sx={{
       display: 'flex',
@@ -9,10 +9,10 @@ const ErrorBox = ({ message }) => (
       alignItems: 'center',
     }}
   >
-    <Typography color="danger" level="body-sm">
+    <Typography color={color} level="body-sm">
       {message}
     </Typography>
   </Box>
 );
 
-export default ErrorBox;
+export default MessageBox;
