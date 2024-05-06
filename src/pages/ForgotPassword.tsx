@@ -5,7 +5,6 @@ import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
-import IconButton from '@mui/joy/IconButton';
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
@@ -15,6 +14,8 @@ import { sendPasswordResetLink } from '../api/Auth';
 import { AxiosResponse } from 'axios';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
+import Footer from '../components/Footer';
+import RayoIconButton from '../components/RayoIconButton';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -136,15 +137,7 @@ export default function ForgotPassword() {
               gap={4}
               sx={{ mb: 0, alignItems: 'center', justifyContent: 'center' }}
             >
-              <IconButton
-                variant="soft"
-                color="primary"
-                size="lg"
-                sx={{ borderRadius: '50%' }}
-                title="Rayo"
-              >
-                <img src="/logo.png" alt="Logo" className="logo" />
-              </IconButton>
+              <RayoIconButton />
               <Typography component="h3" level="h3">
                 Restablecer contraseña
               </Typography>
@@ -182,11 +175,7 @@ export default function ForgotPassword() {
               </Link>
             </Stack>
           </Box>
-          <Box component="footer" sx={{ py: 3 }}>
-            <Typography level="body-xs" textAlign="center">
-              © {new Date().getFullYear()} · Rayo
-            </Typography>
-          </Box>
+          <Footer />
         </Box>
       </Box>
     </CssVarsProvider>

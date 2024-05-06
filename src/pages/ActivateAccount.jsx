@@ -5,14 +5,17 @@ import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
-import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
+import Skeleton from '@mui/joy/Skeleton';
 import '../index.css';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
+import Footer from '../components/Footer';
+import RayoIconButton from '../components/RayoIconButton';
 
 const ActivateAccount = () => {
   const { id_user, token } = useParams();
+  const [loading, setLoading] = React.useState(true);
   const [result, setResult] = React.useState('');
   const [resultColor, setResultColor] = React.useState('success');
 
@@ -45,6 +48,8 @@ const ActivateAccount = () => {
           `Enlace incorrecto o expirado. 
           Solicita en la app el envio del email de activación nuevamente.`
         );
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -124,18 +129,27 @@ const ActivateAccount = () => {
               gap={4}
               sx={{ mb: 0, alignItems: 'center', justifyContent: 'center' }}
             >
-              <IconButton
-                variant="soft"
-                color="primary"
-                size="lg"
-                sx={{ borderRadius: '50%' }}
-                title="Rayo"
-              >
-                <img src="/logo.png" alt="Logo" className="logo" />
-              </IconButton>
+              <RayoIconButton />
               <Typography component="h3" level="h3">
                 Activar cuenta
               </Typography>
+              {loading && (
+                <Box>
+                  <Skeleton
+                    variant="rectangular"
+                    width={300}
+                    height="1em"
+                    sx={{ mb: 1 }}
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    width={400}
+                    height="1em"
+                    sx={{ mb: 1 }}
+                  />
+                  <Skeleton variant="rectangular" width={200} height="1em" />
+                </Box>
+              )}
               <Typography
                 color={resultColor}
                 level="body-md"
@@ -145,11 +159,7 @@ const ActivateAccount = () => {
               </Typography>
             </Stack>
           </Box>
-          <Box component="footer" sx={{ py: 3 }}>
-            <Typography level="body-xs" textAlign="center">
-              © {new Date().getFullYear()} · Rayo
-            </Typography>
-          </Box>
+          <Footer />
         </Box>
       </Box>
     </CssVarsProvider>
