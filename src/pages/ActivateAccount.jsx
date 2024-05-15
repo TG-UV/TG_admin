@@ -137,17 +137,21 @@ const ActivateAccount = () => {
                 <Box>
                   <Skeleton
                     variant="rectangular"
-                    width={300}
+                    width={'18.75em'}
                     height="1em"
                     sx={{ mb: 1 }}
                   />
                   <Skeleton
                     variant="rectangular"
-                    width={400}
+                    width={'25em'}
                     height="1em"
                     sx={{ mb: 1 }}
                   />
-                  <Skeleton variant="rectangular" width={200} height="1em" />
+                  <Skeleton
+                    variant="rectangular"
+                    width={'12.5em'}
+                    height="1em"
+                  />
                 </Box>
               )}
               <Typography

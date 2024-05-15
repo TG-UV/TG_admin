@@ -170,9 +170,6 @@ export default function ForgotPassword() {
                   {alert}
                 </Stack>
               </form>
-              <Link level="title-sm" href="/">
-                Volver al inicio de sesión
-              </Link>
             </Stack>
           </Box>
           <Footer />
