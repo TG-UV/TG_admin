@@ -133,34 +133,22 @@ const ActivateAccount = () => {
               <Typography component="h3" level="h3">
                 Activar cuenta
               </Typography>
-              {loading && (
-                <Box>
-                  <Skeleton
-                    variant="rectangular"
-                    width={'18.75em'}
-                    height="1em"
-                    sx={{ mb: 1 }}
-                  />
-                  <Skeleton
-                    variant="rectangular"
-                    width={'25em'}
-                    height="1em"
-                    sx={{ mb: 1 }}
-                  />
-                  <Skeleton
-                    variant="rectangular"
-                    width={'12.5em'}
-                    height="1em"
-                  />
-                </Box>
+              {loading ? (
+                <Typography style={{ whiteSpace: 'pre-line' }}>
+                  <Skeleton>
+                    {`Tu cuenta ha sido activada exitosamente. 
+                    ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`}
+                  </Skeleton>
+                </Typography>
+              ) : (
+                <Typography
+                  color={resultColor}
+                  level="body-md"
+                  style={{ whiteSpace: 'pre-line' }}
+                >
+                  {result}
+                </Typography>
               )}
-              <Typography
-                color={resultColor}
-                level="body-md"
-                style={{ whiteSpace: 'pre-line' }}
-              >
-                {result}
-              </Typography>
             </Stack>
           </Box>
           <Footer />
