@@ -13,7 +13,7 @@ import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
 
-const ActivateAccount = () => {
+const ResetPassword = () => {
   const { id_user, token } = useParams();
   const [loading, setLoading] = React.useState(true);
   const [result, setResult] = React.useState('');
@@ -131,21 +131,31 @@ const ActivateAccount = () => {
             >
               <RayoIconButton />
               <Typography component="h3" level="h3">
-                Activar cuenta
+                Restablecer contraseña
               </Typography>
+              {loading && (
+                <Box>
+                  <Skeleton
+                    variant="rectangular"
+                    width={300}
+                    height="1em"
+                    sx={{ mb: 1 }}
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    width={400}
+                    height="1em"
+                    sx={{ mb: 1 }}
+                  />
+                  <Skeleton variant="rectangular" width={200} height="1em" />
+                </Box>
+              )}
               <Typography
                 color={resultColor}
                 level="body-md"
                 style={{ whiteSpace: 'pre-line' }}
               >
-                {loading ? (
-                  <Skeleton>
-                    {`Tu cuenta ha sido activada exitosamente. 
-                    ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`}
-                  </Skeleton>
-                ) : (
-                  result
-                )}
+                {result}
               </Typography>
             </Stack>
           </Box>
@@ -156,4 +166,4 @@ const ActivateAccount = () => {
   );
 };
 
-export default ActivateAccount;
+export default ResetPassword;

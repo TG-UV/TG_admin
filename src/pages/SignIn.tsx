@@ -10,7 +10,7 @@ import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import '../index.css';
-import { signIn } from '../api/Auth';
+import { signIn, me } from '../api/Auth';
 import { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
@@ -18,6 +18,7 @@ import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import getRandomImage from '../utils/getRandomImage';
+import API from '../api/API'
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -54,16 +55,21 @@ export default function SignIn() {
       const res: AxiosResponse = await signIn(data);
 
       if (res.status === 200) {
-        navigate('/home', { state: { name: data.email } });
+        API.interceptors.request.use(config => {
+          config.headers.Authorization = `Token ${res.data.auth_token}`;
+          return config;
+        });
+        const response: AxiosResponse = await me();
+        navigate('/home', { state: { name: JSON.stringify(response.data) } });
       } else {
         const status =
-          '(' + res.status + ') Ha ocurrido un error. Intente nuevamente.';
+          '(' + res.status + ') Ha ocurrido un error. Intenta nuevamente.';
         setErrorAlert(<MessageBox color="danger" message={status} />);
       }
     } catch (error) {
       const errorData = error.response
-        ? 'Correo o contraseña incorrecta. Intente nuevamente.'
-        : 'Error del servidor. Intente más tarde.';
+        ? 'Correo o contraseña incorrecta. Intenta nuevamente.'
+        : 'Error del servidor. Intenta más tarde.';
       setErrorAlert(<MessageBox color="danger" message={errorData} />);
     } finally {
       setLoading(false);

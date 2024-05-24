@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ActivateAccount from '../pages/ActivateAccount';
+import ResetPassword from '../pages/ResetPassword';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import SignIn from '../pages/SignIn';
@@ -16,6 +17,10 @@ const AppRouter = () => {
         <Route
           path="/rayo-activate/:id_user/:token"
           element={<ActivateAccount />}
+        />
+        <Route
+          path="/rayo-password-reset/:id_user/:token"
+          element={<ResetPassword />}
         />
       </Routes>
     </BrowserRouter>

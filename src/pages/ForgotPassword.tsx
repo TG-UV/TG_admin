@@ -51,11 +51,11 @@ export default function ForgotPassword() {
         setAlert(<MessageBox color="success" message={status} />);
       } else {
         const status =
-          '(' + res.status + ') Ha ocurrido un error. Intente nuevamente.';
+          '(' + res.status + ') Ha ocurrido un error. Intenta nuevamente.';
         setAlert(<MessageBox color="danger" message={status} />);
       }
     } catch (error) {
-      const message = 'Error del servidor. Intente más tarde.';
+      const message = 'Error del servidor. Intenta más tarde.';
       setAlert(<MessageBox color="danger" message={message} />);
     } finally {
       setLoading(false);
