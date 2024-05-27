@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { activateAccount } from '../api/Auth';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
@@ -15,11 +15,11 @@ import RayoIconButton from '../components/RayoIconButton';
 
 const ResetPassword = () => {
   const { id_user, token } = useParams();
-  const [loading, setLoading] = React.useState(true);
-  const [result, setResult] = React.useState('');
-  const [resultColor, setResultColor] = React.useState('success');
+  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState('');
+  const [resultColor, setResultColor] = useState('success');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const data = {
       uid: id_user,
       token: token,

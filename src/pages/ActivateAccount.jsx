@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { activateAccount } from '../api/Auth';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
@@ -15,11 +15,15 @@ import RayoIconButton from '../components/RayoIconButton';
 
 const ActivateAccount = () => {
   const { id_user, token } = useParams();
-  const [loading, setLoading] = React.useState(true);
-  const [result, setResult] = React.useState('');
-  const [resultColor, setResultColor] = React.useState('success');
+  const [loading, setLoading] = useState(true);
+  const successMessage = `Tu cuenta ha sido activada exitosamente. 
+  ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`;
+  const errorMessage = `Enlace incorrecto o expirado. 
+  Solicita en la app el envio del email de activación nuevamente.`;
+  const [result, setResult] = useState(successMessage);
+  const [resultColor, setResultColor] = useState('success');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const data = {
       uid: id_user,
       token: token,
@@ -27,34 +31,17 @@ const ActivateAccount = () => {
 
     const sendData = async () => {
       try {
-        const response = await activateAccount(data);
-        if (response.status < 400) {
-          setResult(
-            `Tu cuenta ha sido activada exitosamente. 
-            ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`
-          );
-        } else {
-          setResultColor('danger');
-          setResult(
-            '(' +
-              response.status +
-              ')' +
-              'Ha ocurrido un error. Intenta nuevamente.'
-          );
-        }
+        await activateAccount(data);
       } catch (error) {
+        //setResult(errorMessage);
         setResultColor('warning');
-        setResult(
-          `Enlace incorrecto o expirado. 
-          Solicita en la app el envio del email de activación nuevamente.`
-        );
       } finally {
         setLoading(false);
       }
     };
 
     sendData();
-  }, [id_user, token]);
+  }, [id_user, token, errorMessage]);
 
   return (
     <CssVarsProvider defaultMode="dark" disableTransitionOnChange>
@@ -63,7 +50,7 @@ const ActivateAccount = () => {
         styles={{
           ':root': {
             '--Form-maxWidth': '800px',
-            '--Transition-duration': 'none', // set to `none` to disable transition
+            '--Transition-duration': 'none',
           },
         }}
       />
@@ -93,12 +80,7 @@ const ActivateAccount = () => {
         >
           <Box
             component="header"
-            sx={{
-              pt: 3,
-              gap: 2,
-              display: 'flex',
-              justifyContent: 'right',
-            }}
+            sx={{ pt: 3, gap: 2, display: 'flex', justifyContent: 'right' }}
           >
             <ColorSchemeToggle />
           </Box>
@@ -138,14 +120,7 @@ const ActivateAccount = () => {
                 level="body-md"
                 style={{ whiteSpace: 'pre-line' }}
               >
-                {loading ? (
-                  <Skeleton>
-                    {`Tu cuenta ha sido activada exitosamente. 
-                    ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`}
-                  </Skeleton>
-                ) : (
-                  result
-                )}
+                {loading ? <Skeleton>{successMessage}</Skeleton> : result}
               </Typography>
             </Stack>
           </Box>
