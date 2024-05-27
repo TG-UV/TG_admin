@@ -18,7 +18,7 @@ import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import getRandomImage from '../utils/getRandomImage';
-import API from '../api/API'
+import API from '../api/API';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -52,25 +52,26 @@ export default function SignIn() {
     };
 
     try {
-      const res: AxiosResponse = await signIn(data);
+      const signInResponse: AxiosResponse = await signIn(data);
 
-      if (res.status === 200) {
-        API.interceptors.request.use(config => {
-          config.headers.Authorization = `Token ${res.data.auth_token}`;
-          return config;
-        });
-        const response: AxiosResponse = await me();
-        navigate('/home', { state: { name: JSON.stringify(response.data) } });
-      } else {
-        const status =
-          '(' + res.status + ') Ha ocurrido un error. Intenta nuevamente.';
-        setErrorAlert(<MessageBox color="danger" message={status} />);
-      }
+      API.interceptors.request.use((config) => {
+        config.headers.Authorization = `Token ${signInResponse.data.auth_token}`;
+        return config;
+      });
+
+      const meResponse: AxiosResponse = await me();
+
+      navigate('/home', {
+        state: {
+          name: meResponse.data.first_name + ' ' + meResponse.data.last_name,
+          email: meResponse.data.email,
+        },
+      });
     } catch (error) {
-      const errorData = error.response
+      const errorMessage = error.response
         ? 'Correo o contraseña incorrecta. Intenta nuevamente.'
         : 'Error del servidor. Intenta más tarde.';
-      setErrorAlert(<MessageBox color="danger" message={errorData} />);
+      setErrorAlert(<MessageBox color="danger" message={errorMessage} />);
     } finally {
       setLoading(false);
       setButtonCaption('Iniciar sesión');
@@ -114,12 +115,7 @@ export default function SignIn() {
         >
           <Box
             component="header"
-            sx={{
-              pt: 3,
-              gap: 2,
-              display: 'flex',
-              justifyContent: 'right',
-            }}
+            sx={{ pt: 3, gap: 2, display: 'flex', justifyContent: 'right' }}
           >
             <ColorSchemeToggle />
           </Box>
