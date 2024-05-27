@@ -19,7 +19,7 @@ const ActivateAccount = () => {
   const successMessage = `Tu cuenta ha sido activada exitosamente. 
   ¡Regresa a la app y empieza a disfrutar de los viajes compartidos universitarios!`;
   const errorMessage = `Enlace incorrecto o expirado. 
-  Solicita en la app el envio del email de activación nuevamente.`;
+  Solicita en la app el envío del email de activación nuevamente.`;
   const [result, setResult] = useState(successMessage);
   const [resultColor, setResultColor] = useState('success');
 
@@ -33,7 +33,7 @@ const ActivateAccount = () => {
       try {
         await activateAccount(data);
       } catch (error) {
-        //setResult(errorMessage);
+        setResult(errorMessage);
         setResultColor('warning');
       } finally {
         setLoading(false);
@@ -96,15 +96,6 @@ const ActivateAccount = () => {
               width: 400,
               maxWidth: '100%',
               mx: 'auto',
-              borderRadius: 'sm',
-              '& form': {
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-              },
-              [`& .MuiFormLabel-asterisk`]: {
-                visibility: 'hidden',
-              },
             }}
           >
             <Stack

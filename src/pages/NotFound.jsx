@@ -24,12 +24,7 @@ const NotFound = () => {
       >
         <Box
           component="header"
-          sx={{
-            pt: 3,
-            gap: 2,
-            display: 'flex',
-            justifyContent: 'right',
-          }}
+          sx={{ pt: 3, gap: 2, display: 'flex', justifyContent: 'right' }}
         >
           <ColorSchemeToggle />
         </Box>

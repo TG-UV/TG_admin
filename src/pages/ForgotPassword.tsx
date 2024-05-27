@@ -10,7 +10,6 @@ import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import '../index.css';
 import { sendPasswordResetLink } from '../api/Auth';
-import { AxiosResponse } from 'axios';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import Footer from '../components/Footer';
@@ -28,6 +27,9 @@ export default function ForgotPassword() {
   const [buttonCaption, setButtonCaption] = React.useState('Enviar enlace');
   const [emailSent, setEmailSent] = React.useState(false);
   const [alert, setAlert] = React.useState(<></>);
+  const successMessage =
+    'Te hemos enviado un correo para restablecer la contraseña.';
+  const errorMessage = 'Error del servidor. Intenta más tarde.';
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
@@ -42,21 +44,11 @@ export default function ForgotPassword() {
     };
 
     try {
-      const res: AxiosResponse = await sendPasswordResetLink(data);
-
-      if (res.status < 400) {
-        setEmailSent(true);
-        const status =
-          'Te hemos enviado un correo para restablecer la contraseña.';
-        setAlert(<MessageBox color="success" message={status} />);
-      } else {
-        const status =
-          '(' + res.status + ') Ha ocurrido un error. Intenta nuevamente.';
-        setAlert(<MessageBox color="danger" message={status} />);
-      }
+      await sendPasswordResetLink(data);
+      setEmailSent(true);
+      setAlert(<MessageBox color="success" message={successMessage} />);
     } catch (error) {
-      const message = 'Error del servidor. Intenta más tarde.';
-      setAlert(<MessageBox color="danger" message={message} />);
+      setAlert(<MessageBox color="danger" message={errorMessage} />);
     } finally {
       setLoading(false);
       setButtonCaption('Enviar enlace');
@@ -70,7 +62,7 @@ export default function ForgotPassword() {
         styles={{
           ':root': {
             '--Form-maxWidth': '800px',
-            '--Transition-duration': 'none', // set to `none` to disable transition
+            '--Transition-duration': 'none',
           },
         }}
       />
@@ -100,12 +92,7 @@ export default function ForgotPassword() {
         >
           <Box
             component="header"
-            sx={{
-              pt: 3,
-              gap: 2,
-              display: 'flex',
-              justifyContent: 'right',
-            }}
+            sx={{ pt: 3, gap: 2, display: 'flex', justifyContent: 'right' }}
           >
             <ColorSchemeToggle />
           </Box>
