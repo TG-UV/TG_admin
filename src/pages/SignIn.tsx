@@ -68,9 +68,10 @@ export default function SignIn() {
         },
       });
     } catch (error) {
-      const errorMessage = error.response
-        ? 'Correo o contraseña incorrecta. Intenta nuevamente.'
-        : 'Error del servidor. Intenta más tarde.';
+      const errorMessage =
+        error.response && error.response.status < 500
+          ? 'Correo o contraseña incorrecta. Intenta nuevamente.'
+          : 'Error del servidor. Intenta más tarde.';
       setErrorAlert(<MessageBox color="danger" message={errorMessage} />);
     } finally {
       setLoading(false);
