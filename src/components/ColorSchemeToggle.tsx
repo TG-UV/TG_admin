@@ -14,7 +14,7 @@ function ColorSchemeToggle(props: IconButtonProps) {
   return (
     <IconButton
       aria-label="toggle light/dark mode"
-      title="Modo claro/Modo oscuro"
+      title={mode === 'light' ? 'Modo oscuro' : 'Modo claro'}
       size="sm"
       variant="outlined"
       disabled={!mounted}

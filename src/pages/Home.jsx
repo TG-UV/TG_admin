@@ -45,6 +45,7 @@ function Home() {
           variant="plain"
           color="neutral"
           component="a"
+          aria-pressed="true"
           href="#"
           size="sm"
           startDecorator={<GroupIcon />}
@@ -55,7 +56,6 @@ function Home() {
         <Button
           variant="plain"
           color="neutral"
-          aria-pressed="true"
           component="a"
           href="#"
           size="sm"

@@ -5,53 +5,73 @@ import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
-import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
-import '../index.css';
-import { sendPasswordResetLink } from '../api/Auth';
+import { resetPassword } from '../api/Auth';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
+import PasswordInput from '../components/PasswordInput';
+import { useParams } from 'react-router-dom';
 
 interface FormElements extends HTMLFormControlsCollection {
-  email: HTMLInputElement;
+  newPassword: HTMLInputElement;
+  confirmPassword: HTMLInputElement;
 }
-interface EmailFormElement extends HTMLFormElement {
+interface ResetPasswordFormElement extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-export default function ForgotPassword() {
+const ResetPassword = () => {
+  const { id_user, token } = useParams();
   const [loading, setLoading] = React.useState(false);
-  const [buttonCaption, setButtonCaption] = React.useState('Enviar enlace');
-  const [emailSent, setEmailSent] = React.useState(false);
+  const [buttonCaption, setButtonCaption] = React.useState(
+    'Restablecer contraseña'
+  );
+  const [passwordSent, setPasswordSent] = React.useState(false);
   const [alert, setAlert] = React.useState(<></>);
   const successMessage =
-    'Te hemos enviado un correo para restablecer la contraseña.';
-  const errorMessage = 'Error del servidor. Intenta más tarde.';
+    'Se ha restablecido tu contraseña. Ya puedes iniciar sesión con tu nueva contraseña';
+  const serverErrorMessage = 'Error del servidor. Intenta más tarde.';
+  const expiredLinkMessage = `Enlace incorrecto o expirado. 
+  Solicita el envío del enlace de restablecimiento nuevamente.`;
+  const noMatchMessage = 'Las contraseñas no coinciden.';
 
-  const handleSubmit = async (event: React.FormEvent<EmailFormElement>) => {
+  const handleSubmit = async (
+    event: React.FormEvent<ResetPasswordFormElement>
+  ) => {
     event.preventDefault();
     const formElements = event.currentTarget.elements;
-
-    setLoading(true);
-    setButtonCaption('');
-    setAlert(<></>);
-
     const data = {
-      email: formElements.email.value,
+      uid: id_user,
+      token: token,
+      new_password: formElements.newPassword.value,
     };
 
-    try {
-      await sendPasswordResetLink(data);
-      setEmailSent(true);
-      setAlert(<MessageBox color="success" message={successMessage} />);
-    } catch (error) {
-      setAlert(<MessageBox color="danger" message={errorMessage} />);
-    } finally {
-      setLoading(false);
-      setButtonCaption('Enviar enlace');
+    if (formElements.newPassword.value === formElements.confirmPassword.value) {
+      setLoading(true);
+      setButtonCaption('');
+      setAlert(<></>);
+
+      try {
+        await resetPassword(data);
+        setPasswordSent(true);
+        setAlert(<MessageBox color="success" message={successMessage} />);
+      } catch (error) {
+        const message =
+          error.response && error.response.status < 500
+            ? error.response.data && error.response.data.new_password
+              ? error.response.data.new_password.join(' ')
+              : expiredLinkMessage
+            : serverErrorMessage;
+        setAlert(<MessageBox color="danger" message={message} />);
+      } finally {
+        setLoading(false);
+        setButtonCaption('Restablecer contraseña');
+      }
+    } else {
+      setAlert(<MessageBox color="danger" message={noMatchMessage} />);
     }
   };
 
@@ -109,14 +129,8 @@ export default function ForgotPassword() {
               maxWidth: '100%',
               mx: 'auto',
               borderRadius: 'sm',
-              '& form': {
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-              },
-              [`& .MuiFormLabel-asterisk`]: {
-                visibility: 'hidden',
-              },
+              '& form': { display: 'flex', flexDirection: 'column', gap: 2 },
+              [`& .MuiFormLabel-asterisk`]: { visibility: 'hidden' },
             }}
           >
             <Stack
@@ -128,28 +142,32 @@ export default function ForgotPassword() {
                 Restablecer contraseña
               </Typography>
               <Typography color="neutral" level="body-md">
-                Ingresa tu correo y te enviaremos un enlace para que puedas
-                restablecer tu contraseña.
+                Crea una nueva contraseña para reemplazar la que no recuerdas.
               </Typography>
             </Stack>
             <Stack gap={4} sx={{ mt: 2 }}>
               <form onSubmit={handleSubmit}>
-                <FormControl required disabled={emailSent}>
-                  <Input
-                    type="email"
-                    name="email"
-                    placeholder="Correo"
-                    title="Correo"
-                    autoComplete="email"
+                <FormControl required disabled={passwordSent}>
+                  <PasswordInput
+                    name="newPassword"
+                    placeholder="Nueva contraseña"
+                    title="Nueva contraseña"
+                  />
+                </FormControl>
+                <FormControl required disabled={passwordSent}>
+                  <PasswordInput
+                    name="confirmPassword"
+                    placeholder="Confirmar nueva contraseña"
+                    title="Confirmar nueva contraseña"
                   />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
                   <Button
                     type="submit"
-                    title="Enviar enlace"
+                    title="Restablecer contraseña"
                     loading={loading}
                     fullWidth
-                    disabled={emailSent}
+                    disabled={passwordSent}
                   >
                     {buttonCaption}
                   </Button>
@@ -163,4 +181,6 @@ export default function ForgotPassword() {
       </Box>
     </CssVarsProvider>
   );
-}
+};
+
+export default ResetPassword;

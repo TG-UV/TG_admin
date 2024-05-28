@@ -17,6 +17,7 @@ import MessageBox from '../components/MessageBox';
 import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
+import PasswordInput from '../components/PasswordInput';
 import getRandomImage from '../utils/getRandomImage';
 import API from '../api/API';
 
@@ -164,12 +165,10 @@ export default function SignIn() {
                   />
                 </FormControl>
                 <FormControl required>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     name="password"
                     placeholder="Contraseña"
                     title="Contraseña"
-                    autoComplete="current-password"
                   />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
