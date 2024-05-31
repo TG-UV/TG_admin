@@ -14,11 +14,11 @@ import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PersonIcon from '@mui/icons-material/Person';
+import LogoutMenuItem from './LogoutMenuItem';
 
 const Header = ({ name, email }) => {
   const [open, setOpen] = React.useState(false);
@@ -162,10 +162,7 @@ const Header = ({ name, email }) => {
               <SettingsRoundedIcon />
               Configuración
             </MenuItem>
-            <MenuItem>
-              <LogoutRoundedIcon />
-              Cerrar sesión
-            </MenuItem>
+            <LogoutMenuItem />
           </Menu>
         </Dropdown>
       </Box>
