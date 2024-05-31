@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import SignIn from '../pages/SignIn';
 import ForgotPassword from '../pages/ForgotPassword';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 const AppRouter = () => {
   return (
@@ -12,7 +13,7 @@ const AppRouter = () => {
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/home" element={<Home name={'admin'} />} />
+        <Route path="/home" element={<ProtectedRoute component={Home} />} />
         <Route path="*" element={<NotFound />} />
         <Route
           path="/rayo-activate/:id_user/:token"
