@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { activateAccount } from '../api/Auth';
+import { activateAccount } from '../services/requests';
 import { useEffect, useState } from 'react';
 import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';

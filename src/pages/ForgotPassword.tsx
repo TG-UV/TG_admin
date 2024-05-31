@@ -9,7 +9,7 @@ import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import '../index.css';
-import { sendPasswordResetLink } from '../api/Auth';
+import { sendPasswordResetLink } from '../services/requests';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import Footer from '../components/Footer';

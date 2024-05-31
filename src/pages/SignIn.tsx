@@ -10,7 +10,7 @@ import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import '../index.css';
-import { signIn, me } from '../api/Auth';
+import { signIn, me } from '../services/requests';
 import { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
@@ -19,7 +19,7 @@ import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PasswordInput from '../components/PasswordInput';
 import getRandomImage from '../utils/getRandomImage';
-import API from '../api/API';
+import { setToken } from '../services/authService';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -54,11 +54,7 @@ export default function SignIn() {
 
     try {
       const signInResponse: AxiosResponse = await signIn(data);
-
-      API.interceptors.request.use((config) => {
-        config.headers.Authorization = `Token ${signInResponse.data.auth_token}`;
-        return config;
-      });
+      setToken(signInResponse.data.auth_token);
 
       const meResponse: AxiosResponse = await me();
 

@@ -7,7 +7,7 @@ import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
-import { resetPassword } from '../api/Auth';
+import { resetPassword } from '../services/requests';
 import MessageBox from '../components/MessageBox';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import Footer from '../components/Footer';
