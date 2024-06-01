@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { CssVarsProvider } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Button from '@mui/joy/Button';
@@ -9,12 +9,22 @@ import PlaceIcon from '@mui/icons-material/Place';
 import Layout from '../components/Layout';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import { useLocation } from 'react-router-dom';
+import { me } from '../services/requests';
 
-function Home() {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const location = useLocation();
-  const { name, email } = location.state || {};
+const Home = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    const getName = async () => {
+      const meResponse = await me();
+      const fullName =
+        meResponse.data.first_name + ' ' + meResponse.data.last_name;
+      setName(fullName);
+    };
+
+    getName();
+  }, []);
 
   return (
     <CssVarsProvider disableTransitionOnChange>
@@ -82,7 +92,7 @@ function Home() {
         }}
       >
         <Layout.Header>
-          <Header name={name} email={email} />
+          <Header name={name} />
         </Layout.Header>
         <Layout.SideNav>
           <Navigation />
@@ -90,6 +100,6 @@ function Home() {
       </Layout.Root>
     </CssVarsProvider>
   );
-}
+};
 
 export default Home;

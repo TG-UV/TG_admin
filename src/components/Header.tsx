@@ -20,7 +20,7 @@ import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutMenuItem from './LogoutMenuItem';
 
-const Header = ({ name, email }) => {
+const Header = ({ name }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -152,7 +152,7 @@ const Header = ({ name, email }) => {
                     {name}
                   </Typography>
                   <Typography level="body-xs" textColor="text.tertiary">
-                    {email}
+                    Admin
                   </Typography>
                 </Box>
               </Box>

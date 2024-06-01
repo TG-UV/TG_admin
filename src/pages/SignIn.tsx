@@ -12,14 +12,14 @@ import Stack from '@mui/joy/Stack';
 import '../index.css';
 import { signIn, profile } from '../services/requests';
 import { AxiosResponse } from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
 import Footer from '../components/Footer';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PasswordInput from '../components/PasswordInput';
 import getRandomImage from '../utils/getRandomImage';
-import { setToken, removeToken } from '../services/authService';
+import { setToken, removeToken, isAuthenticated } from '../services/authService';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -30,6 +30,10 @@ interface SignInFormElement extends HTMLFormElement {
 }
 
 export default function SignIn() {
+  if (isAuthenticated()) {
+    return <Navigate to="/home" />;
+  }
+
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [buttonCaption, setButtonCaption] = React.useState('Iniciar sesión');
@@ -38,8 +42,11 @@ export default function SignIn() {
   const [darkImage, setDarkImage] = React.useState('');
   const notAdminError =
     'Solo usuarios tipo administrador pueden iniciar sesión en este sitio.';
-  React.useEffect(() => setLightImage(getRandomImage('light')), []);
-  React.useEffect(() => setDarkImage(getRandomImage('dark')), []);
+
+  React.useEffect(() => {
+    setLightImage(getRandomImage('light'));
+    setDarkImage(getRandomImage('dark'));
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<SignInFormElement>) => {
     event.preventDefault();
@@ -60,15 +67,7 @@ export default function SignIn() {
 
       // Redirige hacia la página de inicio si el usuario es un administrador
       if (profileResponse.data.type === 'Admin') {
-        navigate('/home', {
-          state: {
-            name:
-              profileResponse.data.first_name +
-              ' ' +
-              profileResponse.data.last_name,
-            email: profileResponse.data.email,
-          },
-        });
+        navigate('/home');
       } else {
         removeToken();
         setErrorAlert(<MessageBox color="danger" message={notAdminError} />);
