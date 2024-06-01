@@ -54,11 +54,15 @@ interface FormErrorValues {
   type?: string[];
 }
 
+type SnackbarColor = 'primary' | 'danger' | 'success' | 'warning';
+
 const EditUser = () => {
   const { id_user } = useParams();
   const errorMessage = 'No se encontró un usuario con el id ingresado.';
   const [result, setResult] = React.useState('');
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarColor, setSnackbarColor] =
+    React.useState<SnackbarColor>('danger');
   const [loading, setLoading] = React.useState(false);
   const [buttonCaption, setButtonCaption] = React.useState('Guardar');
   const [errorAlert, setErrorAlert] = React.useState(<></>);
@@ -76,9 +80,8 @@ const EditUser = () => {
     residence_city: 1,
     type: 1,
   };
-  const cleanErrorFormValues: FormErrorValues = {};
   const [formValues, setFormValues] = React.useState(cleanValues);
-
+  const cleanErrorFormValues: FormErrorValues = {};
   const [formErrorValues, setFormErrorValues] =
     React.useState(cleanErrorFormValues);
 
@@ -89,6 +92,8 @@ const EditUser = () => {
   React.useEffect(() => {
     setResult('');
     setFormValues(cleanValues);
+    setFormErrorValues(cleanErrorFormValues);
+    setSnackbarColor('danger');
 
     const getData = async () => {
       try {
@@ -137,6 +142,7 @@ const EditUser = () => {
       const userData = response.data;
       setResult('Usuario editado correctamente');
       setOpenSnackbar(true);
+      setSnackbarColor('success');
       setFormValues({
         id_user: userData.id_user,
         email: userData.email,
@@ -430,7 +436,7 @@ const EditUser = () => {
                 </Typography>
                 <Snackbar
                   autoHideDuration={3000}
-                  color="warning"
+                  color={snackbarColor}
                   variant="solid"
                   open={openSnackbar}
                   onClose={handleCloseSnackbar}
