@@ -13,11 +13,13 @@ import Header from '../components/Header';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
+import FormHelperText from '@mui/joy/FormHelperText';
 import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import { AxiosResponse } from 'axios';
 import MessageBox from '../components/MessageBox';
+import Snackbar from '@mui/joy/Snackbar';
 
 interface FormElements extends HTMLFormControlsCollection {
   id_user: HTMLInputElement;
@@ -37,10 +39,26 @@ interface EditUserFormElement extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
+interface FormErrorValues {
+  id_user?: string[];
+  email?: string[];
+  first_name?: string[];
+  last_name?: string[];
+  identity_document?: string[];
+  phone_number?: string[];
+  date_of_birth?: string[];
+  is_active?: string[];
+  last_login?: string[];
+  registration_date?: string[];
+  residence_city?: string[];
+  type?: string[];
+}
+
 const EditUser = () => {
   const { id_user } = useParams();
-  const errorMessage = 'No se encontró un usuario con ese id';
+  const errorMessage = 'No se encontró un usuario con el id ingresado.';
   const [result, setResult] = React.useState('');
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [buttonCaption, setButtonCaption] = React.useState('Guardar');
   const [errorAlert, setErrorAlert] = React.useState(<></>);
@@ -58,7 +76,15 @@ const EditUser = () => {
     residence_city: 1,
     type: 1,
   };
+  const cleanErrorFormValues: FormErrorValues = {};
   const [formValues, setFormValues] = React.useState(cleanValues);
+
+  const [formErrorValues, setFormErrorValues] =
+    React.useState(cleanErrorFormValues);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   React.useEffect(() => {
     setResult('');
@@ -84,6 +110,7 @@ const EditUser = () => {
         });
       } catch (error) {
         setResult(errorMessage);
+        setOpenSnackbar(true);
       }
     };
 
@@ -100,16 +127,16 @@ const EditUser = () => {
 
   const handleSubmit = async (event: React.FormEvent<EditUserFormElement>) => {
     event.preventDefault();
-    const formElements = event.currentTarget.elements;
     setLoading(true);
     setButtonCaption('');
     setErrorAlert(<></>);
-    console.log(formValues);
+    setFormErrorValues(cleanErrorFormValues);
 
     try {
       const response: AxiosResponse = await editUser(id_user, formValues);
       const userData = response.data;
       setResult('Usuario editado correctamente');
+      setOpenSnackbar(true);
       setFormValues({
         id_user: userData.id_user,
         email: userData.email,
@@ -125,8 +152,10 @@ const EditUser = () => {
         type: userData.type,
       });
     } catch (error) {
-      console.log(error);
-      const errorMessage = 'Ha ocurrido un error';
+      if (error.response) {
+        setFormErrorValues(error.response.data);
+      }
+      const errorMessage = error.response ? '' : 'Ha ocurrido un error.';
       setErrorAlert(<MessageBox color="danger" message={errorMessage} />);
     } finally {
       setLoading(false);
@@ -204,7 +233,10 @@ const EditUser = () => {
                         value={formValues.id_user}
                       />
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.email ? true : false}
+                    >
                       <FormLabel>Correo</FormLabel>
                       <Input
                         type="email"
@@ -214,8 +246,16 @@ const EditUser = () => {
                         value={formValues.email}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.email
+                          ? formErrorValues.email.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.first_name ? true : false}
+                    >
                       <FormLabel>Nombre</FormLabel>
                       <Input
                         type="text"
@@ -225,8 +265,16 @@ const EditUser = () => {
                         value={formValues.first_name}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.first_name
+                          ? formErrorValues.first_name.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.last_name ? true : false}
+                    >
                       <FormLabel>Apellido</FormLabel>
                       <Input
                         type="text"
@@ -236,8 +284,16 @@ const EditUser = () => {
                         value={formValues.last_name}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.last_name
+                          ? formErrorValues.last_name.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.identity_document ? true : false}
+                    >
                       <FormLabel>Documento de identidad</FormLabel>
                       <Input
                         type="number"
@@ -247,8 +303,16 @@ const EditUser = () => {
                         value={formValues.identity_document}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.identity_document
+                          ? formErrorValues.identity_document.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.phone_number ? true : false}
+                    >
                       <FormLabel>Celular</FormLabel>
                       <Input
                         type="number"
@@ -258,8 +322,16 @@ const EditUser = () => {
                         value={formValues.phone_number}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.phone_number
+                          ? formErrorValues.phone_number.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.date_of_birth ? true : false}
+                    >
                       <FormLabel>Fecha de nacimiento</FormLabel>
                       <Input
                         type="date"
@@ -269,8 +341,16 @@ const EditUser = () => {
                         value={formValues.date_of_birth}
                         onChange={handleChange}
                       />
+                      <FormHelperText>
+                        {formErrorValues.date_of_birth
+                          ? formErrorValues.date_of_birth.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
-                    <FormControl required>
+                    <FormControl
+                      required
+                      error={formErrorValues.is_active ? true : false}
+                    >
                       <FormLabel>Estado</FormLabel>
                       <Select
                         value={formValues.is_active ? 'true' : 'false'}
@@ -282,6 +362,11 @@ const EditUser = () => {
                         <Option value="true">Activo</Option>
                         <Option value="false">Inactivo</Option>
                       </Select>
+                      <FormHelperText>
+                        {formErrorValues.is_active
+                          ? formErrorValues.is_active.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
                     <FormControl>
                       <FormLabel>Último inicio de sesión</FormLabel>
@@ -305,7 +390,7 @@ const EditUser = () => {
                         value={formValues.registration_date}
                       />
                     </FormControl>
-                    <FormControl>
+                    <FormControl error={formErrorValues.type ? true : false}>
                       <FormLabel>Tipo de usuario</FormLabel>
                       <Input
                         disabled
@@ -321,6 +406,11 @@ const EditUser = () => {
                             : 'Pasajero'
                         }
                       />
+                      <FormHelperText>
+                        {formErrorValues.type
+                          ? formErrorValues.type.join(' ')
+                          : ''}
+                      </FormHelperText>
                     </FormControl>
                   </Stack>
                   <Stack gap={4} sx={{ mt: 2 }}>
@@ -338,6 +428,15 @@ const EditUser = () => {
                 <Typography level="body-md" style={{ whiteSpace: 'pre-line' }}>
                   {result}
                 </Typography>
+                <Snackbar
+                  autoHideDuration={3000}
+                  color="warning"
+                  variant="solid"
+                  open={openSnackbar}
+                  onClose={handleCloseSnackbar}
+                >
+                  {result}
+                </Snackbar>
               </Box>
             </Box>
           </Box>

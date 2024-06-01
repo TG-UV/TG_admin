@@ -9,7 +9,6 @@ import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
-import '../index.css';
 import { signIn, profile } from '../services/requests';
 import { AxiosResponse } from 'axios';
 import { useNavigate, Navigate } from 'react-router-dom';

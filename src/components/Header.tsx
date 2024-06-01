@@ -44,7 +44,9 @@ const Header = () => {
   };
 
   const search = () => {
-    navigate('/edit/' + searchParam);
+    if (searchParam !== '') {
+      navigate('/edit/' + searchParam);
+    }
   };
 
   return (
