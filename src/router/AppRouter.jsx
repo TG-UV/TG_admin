@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ActivateAccount from '../pages/ActivateAccount';
 import ResetPassword from '../pages/ResetPassword';
 import Home from '../pages/Home';
+import EditUser from '../pages/EditUser';
 import NotFound from '../pages/NotFound';
 import SignIn from '../pages/SignIn';
 import ForgotPassword from '../pages/ForgotPassword';
@@ -12,6 +13,7 @@ const AppRouter = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SignIn />} />
+        <Route path="/edit/:id_user" element={<ProtectedRoute component={EditUser} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/home" element={<ProtectedRoute component={Home} />} />
         <Route path="*" element={<NotFound />} />

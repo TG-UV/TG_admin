@@ -19,7 +19,12 @@ import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PasswordInput from '../components/PasswordInput';
 import getRandomImage from '../utils/getRandomImage';
-import { setToken, removeToken, isAuthenticated } from '../services/authService';
+import {
+  setToken,
+  setIdUser,
+  signOutService,
+  isAuthenticated,
+} from '../services/authService';
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -64,12 +69,13 @@ export default function SignIn() {
       setToken(signInResponse.data.auth_token);
 
       const profileResponse: AxiosResponse = await profile();
+      setIdUser(profileResponse.data.id_user);
 
       // Redirige hacia la página de inicio si el usuario es un administrador
       if (profileResponse.data.type === 'Admin') {
         navigate('/home');
       } else {
-        removeToken();
+        signOutService();
         setErrorAlert(<MessageBox color="danger" message={notAdminError} />);
       }
     } catch (error) {

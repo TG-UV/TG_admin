@@ -13,15 +13,39 @@ import ListDivider from '@mui/joy/ListDivider';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import RayoIconButton from '../components/RayoIconButton';
 import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutMenuItem from './LogoutMenuItem';
+import ProfileMenuItem from './ProfileMenuItem';
+import { useNavigate } from 'react-router-dom';
+import { me } from '../services/requests';
 
-const Header = ({ name }) => {
+const Header = () => {
   const [open, setOpen] = React.useState(false);
+  const [name, setName] = React.useState('');
+  const [searchParam, setSearchParam] = React.useState('');
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const getName = async () => {
+      const meResponse = await me();
+      const fullName =
+        meResponse.data.first_name + ' ' + meResponse.data.last_name;
+      setName(fullName);
+    };
+
+    getName();
+  }, []);
+
+  const handleChange = (event) => {
+    setSearchParam(event.target.value);
+  };
+
+  const search = () => {
+    navigate('/edit/' + searchParam);
+  };
 
   return (
     <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between' }}>
@@ -43,26 +67,6 @@ const Header = ({ name }) => {
           sx={{ alignSelf: 'center' }}
         >
           Usuarios
-        </Button>
-        <Button
-          variant="plain"
-          color="neutral"
-          component="a"
-          href="#"
-          size="sm"
-          sx={{ alignSelf: 'center' }}
-        >
-          Vehiculos
-        </Button>
-        <Button
-          variant="plain"
-          color="neutral"
-          component="a"
-          href="#"
-          size="sm"
-          sx={{ alignSelf: 'center' }}
-        >
-          Ciudades
         </Button>
       </Stack>
       <Box sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
@@ -91,17 +95,20 @@ const Header = ({ name }) => {
       >
         <Input
           size="sm"
+          value={searchParam}
+          onChange={handleChange}
           variant="outlined"
-          placeholder="Search anything…"
+          placeholder="Buscar usuario por id…"
           startDecorator={<SearchRoundedIcon color="primary" />}
           endDecorator={
             <IconButton
+              onClick={search}
               variant="outlined"
               color="neutral"
               sx={{ bgcolor: 'background.level1' }}
             >
               <Typography level="title-sm" textColor="text.icon">
-                ⌘ K
+                Buscar
               </Typography>
             </IconButton>
           }
@@ -158,10 +165,7 @@ const Header = ({ name }) => {
               </Box>
             </MenuItem>
             <ListDivider />
-            <MenuItem>
-              <SettingsRoundedIcon />
-              Configuración
-            </MenuItem>
+            <ProfileMenuItem />
             <LogoutMenuItem />
           </Menu>
         </Dropdown>
