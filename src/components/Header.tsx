@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
 import IconButton from '@mui/joy/IconButton';
+import LaunchIcon from '@mui/icons-material/Launch';
 import Stack from '@mui/joy/Stack';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
@@ -25,18 +26,22 @@ import { me } from '../services/requests';
 const Header = () => {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [searchParam, setSearchParam] = React.useState('');
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const getName = async () => {
+    const getData = async () => {
       const meResponse = await me();
       const fullName =
         meResponse.data.first_name + ' ' + meResponse.data.last_name;
+      const email = meResponse.data.email;
+
       setName(fullName);
+      setEmail(email);
     };
 
-    getName();
+    getData();
   }, []);
 
   const handleChange = (event) => {
@@ -69,6 +74,17 @@ const Header = () => {
           sx={{ alignSelf: 'center' }}
         >
           Usuarios
+        </Button>
+        <Button
+          variant="plain"
+          color="success"
+          component="a"
+          aria-pressed="true"
+          href="/add"
+          size="sm"
+          sx={{ alignSelf: 'center' }}
+        >
+          + Añadir
         </Button>
       </Stack>
       <Box sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
@@ -153,21 +169,17 @@ const Header = () => {
               '--ListItem-radius': 'var(--joy-radius-sm)',
             }}
           >
-            <MenuItem>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <PersonIcon />
-                <Box sx={{ ml: 1.5 }}>
-                  <Typography level="title-sm" textColor="text.primary">
-                    {name}
-                  </Typography>
-                  <Typography level="body-xs" textColor="text.tertiary">
-                    Admin
-                  </Typography>
-                </Box>
-              </Box>
+            <ProfileMenuItem name={name} email={email} />
+            <MenuItem
+              title="Ir al sitio"
+              onClick={() => {
+                window.open('https://uv-tg-backend.vercel.app/admin', '_blank');
+              }}
+            >
+              <LaunchIcon />
+              Más funciones
             </MenuItem>
             <ListDivider />
-            <ProfileMenuItem />
             <LogoutMenuItem />
           </Menu>
         </Dropdown>

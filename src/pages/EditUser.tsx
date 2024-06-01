@@ -91,6 +91,7 @@ const EditUser = () => {
 
   React.useEffect(() => {
     setResult('');
+    setErrorAlert(<></>);
     setFormValues(cleanValues);
     setFormErrorValues(cleanErrorFormValues);
     setSnackbarColor('danger');
@@ -132,6 +133,7 @@ const EditUser = () => {
 
   const handleSubmit = async (event: React.FormEvent<EditUserFormElement>) => {
     event.preventDefault();
+    setResult('');
     setLoading(true);
     setButtonCaption('');
     setErrorAlert(<></>);

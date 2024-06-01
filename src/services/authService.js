@@ -31,8 +31,7 @@ export const signInService = (token, id_user) => {
 };
 
 export const signOutService = () => {
-  removeToken();
-  removeIdUser();
+  localStorage.clear();
 };
 
 export const isAuthenticated = () => {

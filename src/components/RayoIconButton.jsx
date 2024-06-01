@@ -1,14 +1,19 @@
 import IconButton from '@mui/joy/IconButton';
 import rayoIcon from '/logo.png';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const RayoIconButton = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/');
+  };
+
   return (
     <IconButton
-      component={Link}
-      to="/"
+      onClick={handleClick}
       variant="soft"
-      color="primary"
+      color="danger"
       size="lg"
       sx={{ borderRadius: '50%' }}
       title="Rayo"
