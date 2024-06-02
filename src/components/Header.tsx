@@ -13,6 +13,8 @@ import MenuItem from '@mui/joy/MenuItem';
 import ListDivider from '@mui/joy/ListDivider';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import AddIcon from '@mui/icons-material/Add';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import RayoIconButton from '../components/RayoIconButton';
@@ -65,15 +67,16 @@ const Header = () => {
       >
         <RayoIconButton />
         <Button
-          variant="plain"
+          variant="soft"
           color="neutral"
           component="a"
           aria-pressed="true"
-          href="#"
+          href="/list"
           size="sm"
           sx={{ alignSelf: 'center' }}
+          startDecorator={<GridOnIcon />}
         >
-          Usuarios
+          Ver usuarios
         </Button>
         <Button
           variant="plain"
@@ -83,8 +86,9 @@ const Header = () => {
           href="/add"
           size="sm"
           sx={{ alignSelf: 'center' }}
+          startDecorator={<AddIcon />}
         >
-          + Añadir
+          Añadir usuario
         </Button>
       </Stack>
       <Box sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
@@ -101,6 +105,32 @@ const Header = () => {
           onClose={() => setOpen(false)}
         >
           <ModalClose />
+          <Box sx={{ width: '100%', p: '2rem' }}>
+            <Button
+              fullWidth
+              variant="plain"
+              color="neutral"
+              component="a"
+              aria-pressed="true"
+              href="/list"
+              sx={{ mb: '1rem' }}
+              startDecorator={<GridOnIcon />}
+            >
+              Ver usuarios
+            </Button>
+            <Button
+              fullWidth
+              variant="plain"
+              color="success"
+              component="a"
+              aria-pressed="true"
+              href="/add"
+              sx={{ mb: '1rem' }}
+              startDecorator={<AddIcon />}
+            >
+              Añadir usuario
+            </Button>
+          </Box>
         </Drawer>
       </Box>
       <Box

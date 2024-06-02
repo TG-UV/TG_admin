@@ -50,11 +50,7 @@ const Home = () => {
         >
           Bienvenido
         </Typography>
-        <Box
-          sx={{
-            gap: '0rem', // Espacio entre elementos
-          }}
-        >
+        <Box>
           <Typography level="h1" fontWeight="xl" fontSize="2rem">
             {name}
           </Typography>
