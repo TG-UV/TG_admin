@@ -92,7 +92,6 @@ const AddUser = () => {
       try {
         const response = await addUser(formValues);
         const userData = response.data;
-        console.log(userData);
         setResult(successMessage);
         setOpenSnackbar(true);
         setSnackbarColor('success');
@@ -150,7 +149,6 @@ const AddUser = () => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100dvh',
             width: '100%',
             px: 2,
           }}

@@ -5,13 +5,11 @@ import { useNavigate } from 'react-router-dom';
 const RayoIconButton = () => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/');
-  };
-
   return (
     <IconButton
-      onClick={handleClick}
+      onClick={() => {
+        navigate('/');
+      }}
       variant="soft"
       color="danger"
       size="lg"

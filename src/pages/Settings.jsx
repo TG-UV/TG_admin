@@ -51,7 +51,6 @@ const Settings = () => {
       try {
         const response = await editUser(getIdUser(), formValues);
         const userData = response.data;
-        console.log(userData);
         setResult(successMessage);
         setOpenSnackbar(true);
         setSnackbarColor('success');
@@ -107,7 +106,6 @@ const Settings = () => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100dvh',
             width: '100%',
             px: 2,
           }}

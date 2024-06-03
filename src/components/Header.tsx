@@ -108,6 +108,21 @@ const Header = () => {
           <ModalClose />
           <Box sx={{ width: '100%', p: '2rem' }}>
             <Button
+              style={{ backgroundColor: '#fa3131', color: '#182a2e' }}
+              fullWidth
+              variant="plain"
+              component="a"
+              aria-pressed="true"
+              href="/"
+              sx={{ mb: '1rem' }}
+              startDecorator={
+                <img src={'/logo.png'} alt="Logo" className="logo" />
+              }
+            >
+              Ir al inicio
+            </Button>
+
+            <Button
               fullWidth
               variant="plain"
               color="neutral"
