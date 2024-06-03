@@ -22,6 +22,7 @@ import ColorSchemeToggle from '../components/ColorSchemeToggle';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutMenuItem from './LogoutMenuItem';
 import ProfileMenuItem from './ProfileMenuItem';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { useNavigate } from 'react-router-dom';
 import { me } from '../services/requests';
 
@@ -142,6 +143,7 @@ const Header = () => {
         }}
       >
         <Input
+          type="number"
           size="sm"
           value={searchParam}
           onChange={handleChange}
@@ -149,12 +151,7 @@ const Header = () => {
           placeholder="Buscar usuario por id…"
           startDecorator={<SearchRoundedIcon color="primary" />}
           endDecorator={
-            <IconButton
-              onClick={search}
-              variant="outlined"
-              color="neutral"
-              sx={{ bgcolor: 'background.level1' }}
-            >
+            <IconButton onClick={search} variant="soft" color="neutral">
               <Typography level="title-sm" textColor="text.icon">
                 Buscar
               </Typography>
@@ -200,6 +197,14 @@ const Header = () => {
             }}
           >
             <ProfileMenuItem name={name} email={email} />
+            <MenuItem
+              onClick={() => {
+                navigate('/settings');
+              }}
+            >
+              <SettingsRoundedIcon />
+              Configuración
+            </MenuItem>
             <MenuItem
               title="Ir al sitio"
               onClick={() => {

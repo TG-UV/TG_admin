@@ -1,6 +1,6 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUser, editUser } from '../services/requests';
+import { getUser, editUser, registration } from '../services/requests';
 import { CssVarsProvider } from '@mui/joy/styles';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
@@ -16,110 +16,70 @@ import FormHelperText from '@mui/joy/FormHelperText';
 import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
-import { AxiosResponse } from 'axios';
 import Snackbar from '@mui/joy/Snackbar';
 import InfoIcon from '@mui/icons-material/Info';
-
-interface FormElements extends HTMLFormControlsCollection {
-  id_user: HTMLInputElement;
-  email: HTMLInputElement;
-  first_name: HTMLInputElement;
-  last_name: HTMLInputElement;
-  identity_document: HTMLInputElement;
-  phone_number: HTMLInputElement;
-  date_of_birth: HTMLInputElement;
-  is_active: HTMLInputElement;
-  last_login: HTMLInputElement;
-  registration_date: HTMLInputElement;
-  residence_city: HTMLInputElement;
-  type: HTMLInputElement;
-}
-interface EditUserFormElement extends HTMLFormElement {
-  readonly elements: FormElements;
-}
-
-interface FormErrorValues {
-  id_user?: string[];
-  email?: string[];
-  first_name?: string[];
-  last_name?: string[];
-  identity_document?: string[];
-  phone_number?: string[];
-  date_of_birth?: string[];
-  is_active?: string[];
-  last_login?: string[];
-  registration_date?: string[];
-  residence_city?: string[];
-  type?: string[];
-}
-
-type SnackbarColor = 'primary' | 'neutral' | 'danger' | 'success' | 'warning';
 
 const EditUser = () => {
   const { id_user } = useParams();
   const errorMessage = 'No se encontró un usuario con el id ingresado.';
   const successMessage = 'Usuario editado correctamente.';
-  const [result, setResult] = React.useState('');
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [snackbarColor, setSnackbarColor] =
-    React.useState<SnackbarColor>('danger');
-  const [loading, setLoading] = React.useState(false);
-  const [buttonCaption, setButtonCaption] = React.useState('Guardar');
-  const cleanValues = {
-    id_user: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    identity_document: '',
-    phone_number: '',
-    date_of_birth: '',
-    is_active: '',
-    last_login: '',
-    registration_date: '',
-    residence_city: 1,
-    type: 1,
+  const [result, setResult] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarColor, setSnackbarColor] = useState('danger');
+  const [loading, setLoading] = useState(false);
+  const [buttonCaption, setButtonCaption] = useState('Guardar');
+  const [cities, setCities] = useState({});
+  const [formValues, setFormValues] = useState({});
+  const [formErrorValues, setFormErrorValues] = useState({});
+  const userTypes = {
+    1: 'Admin',
+    2: 'Conductor',
+    3: 'Pasajero',
   };
-  const [formValues, setFormValues] = React.useState(cleanValues);
-  const cleanErrorFormValues: FormErrorValues = {};
-  const [formErrorValues, setFormErrorValues] =
-    React.useState(cleanErrorFormValues);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
 
-  React.useEffect(() => {
+  // Datos del usuario.
+  useEffect(() => {
     setResult('');
-    setFormValues(cleanValues);
-    setFormErrorValues(cleanErrorFormValues);
-    setSnackbarColor('danger');
+    setFormValues({});
+    setFormErrorValues({});
 
-    const getData = async () => {
+    const getUserData = async () => {
       try {
         const response = await getUser(id_user);
         const userData = response.data;
-        setFormValues({
-          id_user: userData.id_user,
-          email: userData.email,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          identity_document: userData.identity_document,
-          phone_number: userData.phone_number,
-          date_of_birth: userData.date_of_birth,
-          is_active: userData.is_active ? 'true' : 'false',
-          last_login: userData.last_login,
-          registration_date: userData.registration_date,
-          residence_city: userData.residence_city,
-          type: userData.type,
-        });
+        setFormValues(userData);
       } catch (error) {
         setResult(errorMessage);
+        setSnackbarColor('danger');
         setOpenSnackbar(true);
       }
     };
 
-    getData();
+    getUserData();
   }, [id_user, errorMessage]);
+
+  // Datos para el formulario.
+  useEffect(() => {
+    const getRegistrationData = async () => {
+      try {
+        const response = await registration();
+        const citiesObject = response.data.reduce((obj, city) => {
+          obj[city.id_city] = city.name;
+          return obj;
+        }, {});
+
+        setCities(citiesObject);
+      } catch (error) {
+        setCities({});
+      }
+    };
+
+    getRegistrationData();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -129,43 +89,27 @@ const EditUser = () => {
     }));
   };
 
-  const handleStatusSelectChange = (
-    event: React.SyntheticEvent | null,
-    newValue: string | null
-  ) => {
+  const handleSelectChange = (newValue, name) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      is_active: newValue ?? '',
+      [name]: newValue ?? '',
     }));
   };
 
-  const handleSubmit = async (event: React.FormEvent<EditUserFormElement>) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setResult('');
     setLoading(true);
     setButtonCaption('');
-    setFormErrorValues(cleanErrorFormValues);
+    setFormErrorValues({});
 
     try {
-      const response: AxiosResponse = await editUser(id_user, formValues);
+      const response = await editUser(id_user, formValues);
       const userData = response.data;
       setResult(successMessage);
       setOpenSnackbar(true);
       setSnackbarColor('success');
-      setFormValues({
-        id_user: userData.id_user,
-        email: userData.email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        identity_document: userData.identity_document,
-        phone_number: userData.phone_number,
-        date_of_birth: userData.date_of_birth,
-        is_active: userData.is_active ? 'true' : 'false',
-        last_login: userData.last_login,
-        registration_date: userData.registration_date,
-        residence_city: userData.residence_city,
-        type: userData.type,
-      });
+      setFormValues(userData);
     } catch (error) {
       if (error.response) {
         setFormErrorValues(error.response.data);
@@ -243,20 +187,17 @@ const EditUser = () => {
                     name="id_user"
                     placeholder="Id"
                     title="Id"
-                    value={formValues.id_user}
+                    value={formValues.id_user ?? ''}
                   />
                 </FormControl>
-                <FormControl
-                  required
-                  error={formErrorValues.email ? true : false}
-                >
+                <FormControl error={formErrorValues.email ? true : false}>
                   <FormLabel>Correo</FormLabel>
                   <Input
                     type="email"
                     name="email"
                     placeholder="Correo"
                     title="Correo"
-                    value={formValues.email}
+                    value={formValues.email ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -265,17 +206,14 @@ const EditUser = () => {
                       : ''}
                   </FormHelperText>
                 </FormControl>
-                <FormControl
-                  required
-                  error={formErrorValues.first_name ? true : false}
-                >
+                <FormControl error={formErrorValues.first_name ? true : false}>
                   <FormLabel>Nombre</FormLabel>
                   <Input
                     type="text"
                     name="first_name"
                     placeholder="Nombre"
                     title="Nombre"
-                    value={formValues.first_name}
+                    value={formValues.first_name ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -284,17 +222,14 @@ const EditUser = () => {
                       : ''}
                   </FormHelperText>
                 </FormControl>
-                <FormControl
-                  required
-                  error={formErrorValues.last_name ? true : false}
-                >
+                <FormControl error={formErrorValues.last_name ? true : false}>
                   <FormLabel>Apellido</FormLabel>
                   <Input
                     type="text"
                     name="last_name"
                     placeholder="Apellido"
                     title="Apellido"
-                    value={formValues.last_name}
+                    value={formValues.last_name ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -304,7 +239,6 @@ const EditUser = () => {
                   </FormHelperText>
                 </FormControl>
                 <FormControl
-                  required
                   error={formErrorValues.identity_document ? true : false}
                 >
                   <FormLabel>Documento de identidad</FormLabel>
@@ -313,7 +247,7 @@ const EditUser = () => {
                     name="identity_document"
                     placeholder="Documento de identidad"
                     title="Documento de identidad"
-                    value={formValues.identity_document}
+                    value={formValues.identity_document ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -323,7 +257,6 @@ const EditUser = () => {
                   </FormHelperText>
                 </FormControl>
                 <FormControl
-                  required
                   error={formErrorValues.phone_number ? true : false}
                 >
                   <FormLabel>Celular</FormLabel>
@@ -332,7 +265,7 @@ const EditUser = () => {
                     name="phone_number"
                     placeholder="Celular"
                     title="Celular"
-                    value={formValues.phone_number}
+                    value={formValues.phone_number ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -342,7 +275,6 @@ const EditUser = () => {
                   </FormHelperText>
                 </FormControl>
                 <FormControl
-                  required
                   error={formErrorValues.date_of_birth ? true : false}
                 >
                   <FormLabel>Fecha de nacimiento</FormLabel>
@@ -351,7 +283,7 @@ const EditUser = () => {
                     name="date_of_birth"
                     placeholder="Fecha de nacimiento"
                     title="Fecha de nacimiento"
-                    value={formValues.date_of_birth}
+                    value={formValues.date_of_birth ?? ''}
                     onChange={handleChange}
                   />
                   <FormHelperText>
@@ -360,21 +292,24 @@ const EditUser = () => {
                       : ''}
                   </FormHelperText>
                 </FormControl>
-                <FormControl
-                  required
-                  error={formErrorValues.is_active ? true : false}
-                >
+                <FormControl error={formErrorValues.is_active ? true : false}>
                   <FormLabel>Estado</FormLabel>
                   <Select
                     placeholder={
-                      formValues.is_active === 'true' ? 'Activo' : 'Inactivo'
+                      formValues.is_active === undefined
+                        ? 'Estado'
+                        : formValues.is_active
+                        ? 'Activo'
+                        : 'Inactivo'
                     }
                     name="is_active"
                     title="Estado"
-                    onChange={handleStatusSelectChange}
+                    onChange={(e, newValue) => {
+                      handleSelectChange(newValue, 'is_active');
+                    }}
                   >
-                    <Option value="true">Activo</Option>
-                    <Option value="false">Inactivo</Option>
+                    <Option value={true}>Activo</Option>
+                    <Option value={false}>Inactivo</Option>
                   </Select>
                   <FormHelperText>
                     {formErrorValues.is_active
@@ -384,36 +319,47 @@ const EditUser = () => {
                 </FormControl>
                 <FormControl error={formErrorValues.type ? true : false}>
                   <FormLabel>Tipo de usuario</FormLabel>
-                  <Input
-                    disabled
-                    type="text"
-                    name="registration_date"
-                    placeholder="Tipo de usuario"
-                    title="Tipo de usuario"
-                    value={
-                      formValues.type === 1
-                        ? 'Admin'
-                        : formValues.type === 2
-                        ? 'Conductor'
-                        : 'Pasajero'
+                  <Select
+                    placeholder={
+                      formValues.type === undefined
+                        ? 'Tipo de usuario'
+                        : userTypes[formValues.type]
                     }
-                  />
+                    name="type"
+                    title="Tipo de usuario"
+                    onChange={(e, newValue) => {
+                      handleSelectChange(newValue, 'type');
+                    }}
+                  >
+                    <Option value={1}>Admin</Option>
+                    <Option value={2}>Conductor</Option>
+                    <Option value={3}>Pasajero</Option>
+                  </Select>
                   <FormHelperText>
                     {formErrorValues.type ? formErrorValues.type.join(' ') : ''}
                   </FormHelperText>
                 </FormControl>
                 <FormControl
-                  required
                   error={formErrorValues.residence_city ? true : false}
                 >
                   <FormLabel>Ciudad de residencia</FormLabel>
                   <Select
-                    placeholder={formValues.residence_city}
+                    placeholder={
+                      formValues.residence_city === undefined
+                        ? 'Ciudad de residencia'
+                        : cities[formValues.residence_city]
+                    }
                     name="residence_city"
                     title="Ciudad de residencia"
+                    onChange={(e, newValue) => {
+                      handleSelectChange(newValue, 'residence_city');
+                    }}
                   >
-                    <Option value="1">Cali</Option>
-                    <Option value="2">Palmira</Option>
+                    {Object.keys(cities).map((key) => (
+                      <Option value={key} key={key}>
+                        {cities[key]}
+                      </Option>
+                    ))}
                   </Select>
                   <FormHelperText>
                     {formErrorValues.residence_city
@@ -429,7 +375,7 @@ const EditUser = () => {
                     name="last_login"
                     placeholder="Último inicio de sesión"
                     title="Último inicio de sesión"
-                    value={formValues.last_login}
+                    value={formValues.last_login ?? ''}
                   />
                 </FormControl>
                 <FormControl>
@@ -440,7 +386,7 @@ const EditUser = () => {
                     name="registration_date"
                     placeholder="Fecha de registro"
                     title="Fecha de registro"
-                    value={formValues.registration_date}
+                    value={formValues.registration_date ?? ''}
                   />
                 </FormControl>
               </Stack>
